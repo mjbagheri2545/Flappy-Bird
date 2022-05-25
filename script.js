@@ -54,7 +54,7 @@ class Bird{
         this.w = 34,
         this.h = 26,
         this.x = 50,
-        this.y = 150,
+        this.y = 215,
         this.currentIndex = 0,
         this.bird = this.animation[this.currentIndex].sy;
     }
@@ -71,6 +71,40 @@ class Bird{
 }
 
 let bird = new Bird();
+
+class Start{
+    constructor(){
+        this.sx = 0,
+        this.sy = 227,
+        this.w = 175,
+        this.h = 160,
+        this.x = can.width/2 - 175/2,
+        this.y = can.height/2 - 80
+    }
+    draw(){
+    c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
+    }
+
+}
+
+let start = new Start();
+
+class GameOver{
+    constructor(){
+        this.sx = 174,
+        this.sy = 227,
+        this.w = 225,
+        this.h = 200,
+        this.x = can.width/2 - 225/2,
+        this.y = can.height/2 - 100
+    }
+    draw(){
+    c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
+    }
+
+}
+
+let gameOver = new GameOver();
 
 function draw(){
     c.fillStyle = '#00cec9';
