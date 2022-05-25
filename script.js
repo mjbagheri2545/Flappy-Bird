@@ -42,20 +42,52 @@ class Fg{
 
 let fg = new Fg();
 
+class Bird{
+    constructor(){
+        this.animation = [
+        {sy : 112},
+        {sy : 139},
+        {sy : 165},
+        {sy : 139},
+        ],
+        this.sx = 276,
+        this.w = 34,
+        this.h = 26,
+        this.x = 50,
+        this.y = 150,
+        this.currentIndex = 0,
+        this.bird = this.animation[this.currentIndex].sy;
+    }
+    draw(){
+    c.drawImage(sprite,this.sx,this.bird,this.w,this.h,this.x,this.y,this.w,this.h);
+    }
+    flap(){
+
+    }
+    update(){
+    
+    }
+
+}
+
+let bird = new Bird();
+
 function draw(){
     c.fillStyle = '#00cec9';
     c.fillRect(0,0,can.width,can.height);
     bg.draw();
     fg.draw();
+    bird.draw();
 }
 function update(){
-
+    
 }
 function game(){
     update();
     draw();
     frame+=1;
     requestAnimationFrame(game);
+    
 
 }
 
