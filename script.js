@@ -5,6 +5,34 @@ let sprite = new Image();
 sprite.src = './image/sprite.png';
 let frame = 0;
 
+let state = {
+    currentState : 0,
+    getready : 0,
+    gaming : 1,
+    gameover : 2
+}
+
+function clickHandler(){
+    switch (state.currentState) {
+        case state.getready:
+            state.currentState = state.gaming;
+            break;
+        case state.gaming:
+            bird.flap();
+            break;
+        default:
+            state.currentState = state.getready;
+            break;
+    }
+}
+
+document.addEventListener('click',clickHandler);
+document.addEventListener('keydown',(e)=>{
+    if(e.code == 'space'){
+        clickHandler();
+    }
+})
+
 class Bg{
     constructor(){
         this.sx = 0,
@@ -53,8 +81,8 @@ class Bird{
         this.sx = 276,
         this.w = 34,
         this.h = 26,
-        this.x = 50,
-        this.y = 215,
+        this.x = 33,
+        this.y = 130,
         this.currentIndex = 0,
         this.bird = this.animation[this.currentIndex].sy;
     }
@@ -72,45 +100,51 @@ class Bird{
 
 let bird = new Bird();
 
-class Start{
+class GetReady{
     constructor(){
         this.sx = 0,
-        this.sy = 227,
-        this.w = 175,
+        this.sy = 228,
+        this.w = 174,
         this.h = 160,
-        this.x = can.width/2 - 175/2,
-        this.y = can.height/2 - 80
+        this.x = can.width/2 - 174/2,
+        this.y = 80
     }
     draw(){
-    c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
+    if(state.currentState == state.getready){
+        c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
+    }
     }
 
 }
 
-let start = new Start();
+let getready = new GetReady();
 
 class GameOver{
     constructor(){
-        this.sx = 174,
-        this.sy = 227,
+        this.sx = 175,
+        this.sy = 228,
         this.w = 225,
         this.h = 200,
         this.x = can.width/2 - 225/2,
-        this.y = can.height/2 - 100
+        this.y = 100
     }
     draw(){
-    c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
+    if(state.currentState == state.gameover){
+        c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
+    }
     }
 
 }
 
-let gameOver = new GameOver();
+let gameover = new GameOver();
 
 function draw(){
     c.fillStyle = '#00cec9';
     c.fillRect(0,0,can.width,can.height);
     bg.draw();
     fg.draw();
+    getready.draw();
+    gameover.draw();
     bird.draw();
 }
 function update(){
