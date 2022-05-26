@@ -12,7 +12,7 @@ let state = {
     gameover : 2
 }
 
-function clickHandler(){
+function click(){
     switch (state.currentState) {
         case state.getready:
             state.currentState = state.gaming;
@@ -21,16 +21,18 @@ function clickHandler(){
             bird.flap();
             break;
         default:
+            bird.speed = 0;
             state.currentState = state.getready;
             break;
     }
 }
 
-document.addEventListener('click',clickHandler);
+document.addEventListener('click',click);
 document.addEventListener('keydown',(e)=>{
-    if(e.code == 'space'){
-        clickHandler();
+    if(e.which == 32){
+        click();
     }
+    console.log(2)
 })
 
 class Bg{
@@ -73,27 +75,41 @@ let fg = new Fg();
 class Bird{
     constructor(){
         this.animation = [
-        {sy : 112},
-        {sy : 139},
-        {sy : 165},
-        {sy : 139},
+        {sx : 276, sy : 112},
+        {sx : 276, sy : 139},
+        {sx : 276, sy : 165},
+        {sx : 276, sy : 139},
         ],
-        this.sx = 276,
         this.w = 34,
         this.h = 26,
-        this.x = 33,
-        this.y = 130,
+        this.x = 50,
+        this.y = 150,
         this.currentIndex = 0,
-        this.bird = this.animation[this.currentIndex].sy;
+        this.g = 0.25,
+        this.speed = 0
     }
     draw(){
-    c.drawImage(sprite,this.sx,this.bird,this.w,this.h,this.x,this.y,this.w,this.h);
+    let bird = this.animation[this.currentIndex];
+    c.drawImage(sprite,bird.sx,bird.sy,this.w,this.h,this.x - this.w/2,this.y-this.h/2,this.w,this.h);
     }
     flap(){
-
+    this.speed = -4.6;
+    console.log(this.speed)
     }
     update(){
-    
+    let flySpeed = state.currentState == state.getready ? 10 : 5;
+    this.currentIndex += frame % flySpeed == 0 ? 1 : 0;
+    this.currentIndex = this.currentIndex % 4;
+    if(state.currentState == state.getready){
+        this.y = 130;
+    }else{
+        this.speed +=this.g;
+        this.y +=this.speed;
+    }
+    if(this.y + this.h/2 >= can.height - fg.h){
+        state.currentState = state.gameover;
+        this.y = can.height - fg.h - this.h/2;
+    }
     }
 
 }
@@ -148,12 +164,12 @@ function draw(){
     bird.draw();
 }
 function update(){
-    
+    bird.update();
 }
 function game(){
     update();
     draw();
-    frame+=1;
+    frame++;
     requestAnimationFrame(game);
     
 
