@@ -4,6 +4,7 @@ let c = can.getContext('2d');
 let sprite = new Image();
 sprite.src = './image/sprite.png';
 let frame = 0;
+let deg = Math.PI/180
 
 let state = {
     currentState : 0,
@@ -22,6 +23,7 @@ function click(){
             break;
         default:
             bird.speed = 0;
+            bird.rotation = 0;
             state.currentState = state.getready;
             break;
     }
@@ -86,14 +88,21 @@ class Bird{
         this.y = 150,
         this.currentIndex = 0,
         this.g = 0.25,
-        this.speed = 0
+        this.speed = 0,
+        this.rotation = 0,
+        this.r = 1.3
     }
     draw(){
     let bird = this.animation[this.currentIndex];
-    c.drawImage(sprite,bird.sx,bird.sy,this.w,this.h,this.x - this.w/2,this.y-this.h/2,this.w,this.h);
+    c.save();
+    c.translate(this.x,this.y)
+    c.rotate(this.rotation);
+    c.drawImage(sprite,bird.sx,bird.sy,this.w,this.h, - this.w/2,-this.h/2,this.w,this.h);
+    c.restore();
     }
     flap(){
     this.speed = -4.6;
+    this.rotation = - 25 * deg;
     console.log(this.speed)
     }
     update(){
@@ -109,6 +118,13 @@ class Bird{
     if(this.y + this.h/2 >= can.height - fg.h){
         state.currentState = state.gameover;
         this.y = can.height - fg.h - this.h/2;
+    }
+    if(state.currentState == state.getready || state.currentState == state.gameover){
+        this.rotation = this.rotation;
+    }else if(this.rotation == 90){
+        this.rotation = 90;
+    }else{
+        this.rotation = this.rotation + this.r * deg;
     }
     }
 
@@ -172,7 +188,6 @@ function game(){
     frame++;
     requestAnimationFrame(game);
     
-
 }
 
 game();
