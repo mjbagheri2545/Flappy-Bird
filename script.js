@@ -118,14 +118,19 @@ class Bird{
     if(this.y + this.h/2 >= can.height - fg.h){
         state.currentState = state.gameover;
         this.y = can.height - fg.h - this.h/2;
+        this.currentIndex = 1;
     }
     if(state.currentState == state.getready || state.currentState == state.gameover){
         this.rotation = this.rotation;
-    }else if(this.rotation == 90){
-        this.rotation = 90;
     }else{
-        this.rotation = this.rotation + this.r * deg;
+        if(this.rotation >= 85 * deg){
+            this.rotation = 85 * deg;
+        }else{
+            this.rotation = this.rotation + this.r * deg;
+        }
     }
+
+    
     }
 
 }
