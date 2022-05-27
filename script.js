@@ -24,6 +24,7 @@ function click(){
         default:
             bird.speed = 0;
             bird.rotation = 0;
+            pipes.position= [];
             state.currentState = state.getready;
             break;
     }
@@ -62,17 +63,72 @@ class Fg{
         this.w = 224,
         this.h = 112,
         this.x = 0,
-        this.y = can.height - 112
+        this.y = can.height - 112,
+        this.dx = 2
     }
     draw(){
     c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
     c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x + this.w,this.y,this.w,this.h);
-
     }
-
+    update(){
+        if(state.currentState == state.gaming){
+            this.x = (this.x - this.dx)%(this.w/2) ;
+        }
+    }
 }
 
 let fg = new Fg();
+
+class Pipes{
+    constructor(){
+        this.top = {
+            sx : 553 ,
+            sy : 0
+        }
+        this.bottom = {
+            sx : 502 ,
+            sy : 0
+        }
+        this.maxY = -150,
+        this.w = 53,
+        this.h = 400,
+        this.position = [],
+        this.dx = 2,
+        this.gap = 80
+    }
+    draw(){
+        for(let i = 0; i < this.position.length;i++){
+          let pos = this.position[i];
+          let topY = pos.y;
+          let bottomY = pos.y + this.h + this.gap;
+          if(bottomY + this.h >=fg.h) {
+             ;
+        }
+          c.drawImage(sprite,this.top.sx,this.top.sy,this.w,this.h,pos.x,topY,this.w,this.h);
+          c.drawImage(sprite,this.bottom.sx,this.bottom.sy,this.w,this.h,pos.x,bottomY,this.w,this.h);
+        }
+    }
+    update(){
+        if(state.currentState != state.gaming) return;
+        if(frame %100 == 0){
+            this.position.push({
+                x : can.width ,
+                y : this.maxY * (Math.random() + 1)})
+            }
+
+            for(let i = 0; i < this.position.length;i++){
+                this.position[i].x -= this.dx;
+                if(this.position[i].x + this.w <= 0){
+                    this.position.shift();
+                }
+            }
+        
+        }
+        
+}
+
+
+let pipes = new Pipes();
 
 class Bird{
     constructor(){
@@ -180,12 +236,15 @@ function draw(){
     c.fillRect(0,0,can.width,can.height);
     bg.draw();
     fg.draw();
+    pipes.draw();
     getready.draw();
     gameover.draw();
     bird.draw();
 }
 function update(){
     bird.update();
+    fg.update();
+    pipes.update();
 }
 function game(){
     update();
