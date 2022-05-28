@@ -94,7 +94,7 @@ class Pipes{
         this.h = 400,
         this.position = [],
         this.dx = 2,
-        this.gap = 80
+        this.gap = 110
     }
     draw(){
         for(let i = 0; i < this.position.length;i++){
@@ -235,8 +235,8 @@ function draw(){
     c.fillStyle = '#00cec9';
     c.fillRect(0,0,can.width,can.height);
     bg.draw();
-    fg.draw();
     pipes.draw();
+    fg.draw();
     getready.draw();
     gameover.draw();
     bird.draw();
