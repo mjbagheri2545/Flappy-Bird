@@ -17,9 +17,42 @@ opacity: 70% ;
 }
 .container{
     position: relative;
+    border: 4px solid rgb(1, 44, 8);
+    top: 10px;
+    padding-top: 10px;
+    padding-bottom: 55px;
 }
 .div:hover{
   font-size: 40px;
   opacity: 100%;
   cursor: pointer;
+}
+#head{
+font-size: 2rem;
+margin-bottom: 5px;
+margin-top: 0px;
+top: 0px;
+}
+img{
+  width: 62px;
+  height: 62px;
+  border-radius: 10px;
+  margin-right: 10px;
+}
+#git{
+  font-size: 24px;
+}
+.flex{
+  display: flex;
+}
+#note{
+  position: absolute;
+  bottom: 10px;
+  left: 37.5%;
+  font-size: 30px;
+}
+.btn{
+  border: 2px solid rgb(1, 44, 20);
+  border-radius: 5px;
+  padding: 3px 4px;
 }
