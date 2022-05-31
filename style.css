@@ -1,6 +1,25 @@
 #mycan{
+    position: relative;
     display: block;
     border: 3px solid rgba(0, 0, 0, 0.555);
     border-radius: 5px;
     margin: 0px auto;
+    z-index: 1;
+}
+.div{
+z-index: 2 ;
+position: absolute;
+left: 47%;
+font-size: 30px;
+font-family: Impact;
+color: black;
+opacity: 70% ;
+}
+.container{
+    position: relative;
+}
+.div:hover{
+  font-size: 40px;
+  opacity: 100%;
+  cursor: pointer;
 }

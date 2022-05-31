@@ -1,5 +1,6 @@
 let can = document.querySelector('canvas');
 let c = can.getContext('2d');
+let container = document.querySelector('.container');
 
 let sprite = new Image();
 sprite.src = './image/sprite.png';
@@ -15,15 +16,63 @@ let state = {
     gameover : 3
 }
 
-function click(){
+let modes = [
+    {
+        text : 'Easy',
+        class : 'div',
+        top : '220px',
+        k : 6
+    },
+    {
+        text : 'Medium',
+        class : 'div',
+        top : '270px',
+        k : 5
+    },
+    {
+        text : 'Hard',
+        class : 'div',
+        top : '320px',
+        k : 4
+    }
+]
+
+
+function changeMode(){
+    change(modes[0]);
+    change(modes[1]);
+    change(modes[2]);
+}
+function change(data){
+    let myMode = document.createElement('div');
+    myMode.className = data.class ;
+    myMode.style.top = data.top;
+    myMode.innerText = data.text;
+    container.appendChild(myMode);
+    myMode.addEventListener('click',()=>{
+    
+     document.querySelectorAll('.div').forEach((e)=>{
+         pipes.gap = 20 * data.k;
+         pipes.pipesDistance = 20 * data.k;
+         bird.r = 6.5 / data.k;
+         e.remove();
+     })
+    })
+}
+
+
+document.addEventListener('click',(e)=>{
     switch (state.currentState) {
         case state.getready:
             scoreValue = 0;
             state.currentState = state.mode;
+            changeMode();
             break;
         case state.mode:
-
+            if(e.target.className == 'div'){
+            console.log('e.target.nodeName');
             state.currentState = state.gaming;
+            }
             break;
         case state.gaming:
             bird.flap();
@@ -36,16 +85,7 @@ function click(){
             state.currentState = state.getready;
             break;
     }
-}
-
-document.addEventListener('click',click);
-document.addEventListener('keydown',(e)=>{
-    if(e.which == 32){
-        click();
-    }
-    console.log(2)
-})
-
+});
 class Bg{
     constructor(){
         this.sx = 0,
@@ -102,7 +142,8 @@ class Pipes{
         this.h = 400,
         this.position = [],
         this.dx = 2,
-        this.gap = 110
+        this.gap,
+        this.pipesDistance
     }
     draw(){
         for(let i = 0; i < this.position.length;i++){
@@ -118,7 +159,7 @@ class Pipes{
     }
     update(){
         if(state.currentState != state.gaming) return;
-        if(frame %100 == 0){
+        if(frame % this.pipesDistance == 0){
             this.position.push({
                 x : can.width ,
                 y : this.maxY * (Math.random() + 1)})
@@ -176,8 +217,8 @@ class Score{
             if(scoreValue >= this.best){
                c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
                c.lineWidth = 5;
-               c.fillStyle = '#f39c12'
-               c.strokeStyle = '#d35400'
+               c.fillStyle = '#f39c12';
+               c.strokeStyle = '#d35400';
                c.strokeRect(57,13,210,80);
                c.fillRect(57,13,210,80);
                c.beginPath();
@@ -210,8 +251,8 @@ class Bird{
         this.g = 0.25,
         this.speed = 0,
         this.rotation = 0,
-        this.r = 1.3
-    }
+        this.r
+        }
     draw(){
     let bird = this.animation[this.currentIndex];
     c.save();
@@ -231,7 +272,7 @@ class Bird{
     this.currentIndex = this.currentIndex % 4;
     if(state.currentState == state.getready){
         this.y = 130;
-    }else if(state.currentState == state.gaming){
+    }else if(state.currentState == state.gaming || state.currentState == state.gameover){
         this.speed +=this.g;
         this.y +=this.speed;
     }
@@ -288,7 +329,15 @@ class Mode{
     }
     draw(){
     if(state.currentState == state.mode){
-        c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
+        c.lineWidth = 5;
+        c.fillStyle = '#f39c12';
+        c.strokeStyle = '#d35400';
+        c.fillRect(can.width/2 - 100,can.height/2 - 80 ,200,50)
+        c.strokeRect(can.width/2 - 100,can.height/2 - 80 ,200,50)
+        c.beginPath();
+        c.fillStyle = '#c0392b';
+        c.font = '37px Gubblebum';
+        c.fillText('Select Mode',can.width/2 - 93,can.height/2 - 43)
     }
     }
 
