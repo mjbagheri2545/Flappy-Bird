@@ -5,8 +5,9 @@ let container = document.querySelector('.container');
 let sprite = new Image();
 sprite.src = './image/sprite.png';
 let frame = 0;
-let deg = Math.PI/180
+let deg = Math.PI/180;
 let scoreValue ;
+let localStorageKey ;
 
 let state = {
     currentState : 0,
@@ -21,19 +22,28 @@ let modes = [
         text : 'Easy',
         class : 'div',
         top : '220px',
-        k : 6
+        k : 6,
+        scoreBestIndex : 0,
+        localStorageName : 'bestEasy',
+        recordImgIndex : 0
     },
     {
         text : 'Medium',
         class : 'div',
         top : '270px',
-        k : 5
+        k : 5,
+        scoreBestIndex : 1,
+        localStorageName : 'bestMedium',
+        recordImgIndex : 1
     },
     {
         text : 'Hard',
         class : 'div',
         top : '320px',
-        k : 4
+        k : 4,
+        scoreBestIndex : 2,
+        localStorageName : 'bestHard',
+        recordImgIndex : 2
     }
 ]
 
@@ -50,12 +60,14 @@ function change(data){
     myMode.innerText = data.text;
     container.appendChild(myMode);
     myMode.addEventListener('click',()=>{
-    
-     document.querySelectorAll('.div').forEach((e)=>{
-         pipes.gap = 20 * data.k;
-         pipes.pipesDistance = 20 * data.k;
-         bird.r = 6.5 / data.k;
-         e.remove();
+        pipes.gap = 20 * data.k;
+        pipes.pipesDistance = 20 * data.k;
+        bird.r = 6.5 / data.k;
+        score.bestIndex = data.scoreBestIndex ;
+        localStorageKey = data.localStorageName;
+        newrecord.ImgIndex = data.recordImgIndex;
+    document.querySelectorAll('.div').forEach((e)=>{
+        e.remove();
      })
     })
 }
@@ -172,8 +184,8 @@ class Pipes{
                     this.position.shift();
                     score.value+=1;
                     scoreValue = score.value;
-                    score.best = Math.max(score.value,score.best);
-                    localStorage.setItem('best',score.best);
+                    score.best[score.bestIndex] = Math.max(score.value,score.best[score.bestIndex]);
+                    localStorage.setItem(localStorageKey,score.best[score.bestIndex]);
                 }
                 let bottomPosY = pos.y + this.h + this.gap;
                 if(bird.x + 12 > pos.x && bird.x - 12 < pos.x + this.w && bird.y - 12 < pos.y + this.h
@@ -195,13 +207,12 @@ class Pipes{
 class Score{
     constructor(){
         this.value = 0;
-        this.best = localStorage.getItem('best') || 0;
-        this.sx = 311;
-        this.sy = 158;
-        this.w = 46;
-        this.h = 45;
-        this.x = 72;
-        this.y = 187;
+        this.best = [
+            (localStorage.getItem('bestEasy') || 0),
+            (localStorage.getItem('bestMedium') || 0),
+            (localStorage.getItem('bestHard') || 0)
+        ];
+        this.bestIndex = 1;
     }
     draw(){
         
@@ -213,25 +224,54 @@ class Score{
             c.fillStyle = '#ecf0f1';
             c.font = '27px ARIAL';
             c.fillText(this.value,223,198);
-            c.fillText(this.best,227,240);
-            if(scoreValue >= this.best){
-               c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
-               c.lineWidth = 5;
-               c.fillStyle = '#f39c12';
-               c.strokeStyle = '#d35400';
-               c.strokeRect(57,13,210,80);
-               c.fillRect(57,13,210,80);
-               c.beginPath();
-               c.fillStyle = '#c0392b';
-               c.font = '40px Gubblebum';
-               c.fillText('New Record',62,48);
-               c.fillText('Obtained!!',77,88);
-            }
+            c.fillText(this.best[this.bestIndex],227,240);
         }
     }
 }
 
 let score = new Score();
+class NewRecord{
+    constructor(){
+        this.positionImg =[
+            {
+                sx : 359,
+                sy : 158
+            },
+            {
+                sx : 358,
+                sy : 112
+            },
+            {
+                sx : 311,
+                sy : 158
+            }
+        ];
+        this.w = 46 ;
+        this.h = 45
+        this.x = 72 ;
+        this.y = 187;
+        this.ImgIndex ;
+    }
+    draw(){
+        if(state.currentState == state.gameover){
+        if(scoreValue >= score.best[score.bestIndex]){
+            c.drawImage(sprite,this.positionImg[this.ImgIndex].sx,this.positionImg[this.ImgIndex].sy,this.w,this.h,this.x,this.y,this.w,this.h);
+            c.lineWidth = 5;
+            c.fillStyle = '#f39c12';
+            c.strokeStyle = '#d35400';
+            c.strokeRect(57,13,210,80);
+            c.fillRect(57,13,210,80);
+            c.beginPath();
+            c.fillStyle = '#c0392b';
+            c.font = '40px Gubblebum';
+            c.fillText('New Record',62,48);
+            c.fillText('Obtained!!',77,88);
+        }
+    }
+    }
+}
+
+let newrecord = new NewRecord();
 
 let pipes = new Pipes();
 
@@ -349,7 +389,7 @@ class GameOver{
         this.sx = 175,
         this.sy = 228,
         this.w = 225,
-        this.h = 200,
+        this.h = 162,
         this.x = can.width/2 - 225/2,
         this.y = 100
     }
@@ -374,6 +414,7 @@ function draw(){
     gameover.draw();
     bird.draw();
     score.draw();
+    newrecord.draw();
 }
 function update(){
     bird.update();
