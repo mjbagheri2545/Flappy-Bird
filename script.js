@@ -5,17 +5,24 @@ let sprite = new Image();
 sprite.src = './image/sprite.png';
 let frame = 0;
 let deg = Math.PI/180
+let scoreValue ;
 
 let state = {
     currentState : 0,
     getready : 0,
-    gaming : 1,
-    gameover : 2
+    mode : 1,
+    gaming : 2,
+    gameover : 3
 }
 
 function click(){
     switch (state.currentState) {
         case state.getready:
+            scoreValue = 0;
+            state.currentState = state.mode;
+            break;
+        case state.mode:
+
             state.currentState = state.gaming;
             break;
         case state.gaming:
@@ -25,6 +32,7 @@ function click(){
             bird.speed = 0;
             bird.rotation = 0;
             pipes.position= [];
+            score.value = 0;
             state.currentState = state.getready;
             break;
     }
@@ -117,16 +125,72 @@ class Pipes{
             }
 
             for(let i = 0; i < this.position.length;i++){
-                this.position[i].x -= this.dx;
+                let pos = this.position[i];
+                pos.x -= this.dx;
                 if(this.position[i].x + this.w <= 0){
                     this.position.shift();
+                    score.value+=1;
+                    scoreValue = score.value;
+                    score.best = Math.max(score.value,score.best);
+                    localStorage.setItem('best',score.best);
                 }
+                let bottomPosY = pos.y + this.h + this.gap;
+                if(bird.x + 12 > pos.x && bird.x - 12 < pos.x + this.w && bird.y - 12 < pos.y + this.h
+                    && bird.y + 12 > pos.y ){
+                    state.currentState = state.gameover;
+                }
+                if(bird.x + 12 > pos.x && bird.x - 12 < pos.x + this.w && bird.y - 12 > bottomPosY
+                    && bird.y + 12 < bottomPosY + this.h ){
+                    state.currentState = state.gameover;
+                }
+
+
             }
         
         }
         
 }
 
+class Score{
+    constructor(){
+        this.value = 0;
+        this.best = localStorage.getItem('best') || 0;
+        this.sx = 311;
+        this.sy = 158;
+        this.w = 46;
+        this.h = 45;
+        this.x = 72;
+        this.y = 187;
+    }
+    draw(){
+        
+        if(state.currentState == state.gaming){
+            c.fillStyle = '#ecf0f1';
+            c.font = '30px ARIAL';
+            c.fillText(this.value,can.width/2,40);
+        }else if(state.currentState == state.gameover){
+            c.fillStyle = '#ecf0f1';
+            c.font = '27px ARIAL';
+            c.fillText(this.value,223,198);
+            c.fillText(this.best,227,240);
+            if(scoreValue >= this.best){
+               c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
+               c.lineWidth = 5;
+               c.fillStyle = '#f39c12'
+               c.strokeStyle = '#d35400'
+               c.strokeRect(57,13,210,80);
+               c.fillRect(57,13,210,80);
+               c.beginPath();
+               c.fillStyle = '#c0392b';
+               c.font = '40px Gubblebum';
+               c.fillText('New Record',62,48);
+               c.fillText('Obtained!!',77,88);
+            }
+        }
+    }
+}
+
+let score = new Score();
 
 let pipes = new Pipes();
 
@@ -167,7 +231,7 @@ class Bird{
     this.currentIndex = this.currentIndex % 4;
     if(state.currentState == state.getready){
         this.y = 130;
-    }else{
+    }else if(state.currentState == state.gaming){
         this.speed +=this.g;
         this.y +=this.speed;
     }
@@ -176,7 +240,7 @@ class Bird{
         this.y = can.height - fg.h - this.h/2;
         this.currentIndex = 1;
     }
-    if(state.currentState == state.getready || state.currentState == state.gameover){
+    if(state.currentState == state.getready || state.currentState == state.gameover || state.currentState == state.mode){
         this.rotation = this.rotation;
     }else{
         if(this.rotation >= 85 * deg){
@@ -210,8 +274,27 @@ class GetReady{
 
 }
 
+
 let getready = new GetReady();
 
+class Mode{
+    constructor(){
+        this.sx = 248,
+        this.sy = 282,
+        this.w = 82,
+        this.h = 95,
+        this.x = can.width/2 - 82/2,
+        this.y = 140
+    }
+    draw(){
+    if(state.currentState == state.mode){
+        c.drawImage(sprite,this.sx,this.sy,this.w,this.h,this.x,this.y,this.w,this.h);
+    }
+    }
+
+}
+
+let mode = new Mode();
 class GameOver{
     constructor(){
         this.sx = 175,
@@ -237,9 +320,11 @@ function draw(){
     bg.draw();
     pipes.draw();
     fg.draw();
+    mode.draw()
     getready.draw();
     gameover.draw();
     bird.draw();
+    score.draw();
 }
 function update(){
     bird.update();
