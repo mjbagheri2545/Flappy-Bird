@@ -9,6 +9,19 @@ let deg = Math.PI/180;
 let scoreValue ;
 let localStorageKey ;
 
+let musics = [
+    './audio/die.wav',
+    './audio/flap.wav',
+    './audio/hit.wav',
+    './audio/score.wav',
+    './audio/start.wav',
+];
+let DIE = new Audio(musics[0]);
+let FLAP = new Audio(musics[1]);
+let HIT = new Audio(musics[2]);
+let SCORE = new Audio(musics[3]);
+let START = new Audio(musics[4]);
+
 let state = {
     currentState : 0,
     getready : 0,
@@ -21,7 +34,7 @@ let modes = [
     {
         text : 'Easy',
         class : 'div',
-        top : '220px',
+        top : '230px',
         k : 6,
         scoreBestIndex : 0,
         localStorageName : 'bestEasy',
@@ -30,7 +43,7 @@ let modes = [
     {
         text : 'Medium',
         class : 'div',
-        top : '270px',
+        top : '280px',
         k : 5,
         scoreBestIndex : 1,
         localStorageName : 'bestMedium',
@@ -39,7 +52,7 @@ let modes = [
     {
         text : 'Hard',
         class : 'div',
-        top : '320px',
+        top : '330px',
         k : 4,
         scoreBestIndex : 2,
         localStorageName : 'bestHard',
@@ -82,12 +95,13 @@ document.addEventListener('click',(e)=>{
             break;
         case state.mode:
             if(e.target.className == 'div'){
-            console.log('e.target.nodeName');
             state.currentState = state.gaming;
+            START.play();
             }
             break;
         case state.gaming:
             bird.flap();
+            FLAP.play();
             break;
         default:
             bird.speed = 0;
@@ -183,6 +197,7 @@ class Pipes{
                 if(this.position[i].x + this.w <= 0){
                     this.position.shift();
                     score.value+=1;
+                    SCORE.play();
                     scoreValue = score.value;
                     score.best[score.bestIndex] = Math.max(score.value,score.best[score.bestIndex]);
                     localStorage.setItem(localStorageKey,score.best[score.bestIndex]);
@@ -191,10 +206,12 @@ class Pipes{
                 if(bird.x + 12 > pos.x && bird.x - 12 < pos.x + this.w && bird.y - 12 < pos.y + this.h
                     && bird.y + 12 > pos.y ){
                     state.currentState = state.gameover;
+                    HIT.play();
                 }
                 if(bird.x + 12 > pos.x && bird.x - 12 < pos.x + this.w && bird.y - 12 > bottomPosY
                     && bird.y + 12 < bottomPosY + this.h ){
                     state.currentState = state.gameover;
+                    HIT.play();
                 }
 
 
@@ -318,6 +335,7 @@ class Bird{
     }
     if(this.y + this.h/2 >= can.height - fg.h){
         state.currentState = state.gameover;
+        DIE.play();
         this.y = can.height - fg.h - this.h/2;
         this.currentIndex = 1;
     }
@@ -360,12 +378,7 @@ let getready = new GetReady();
 
 class Mode{
     constructor(){
-        this.sx = 248,
-        this.sy = 282,
-        this.w = 82,
-        this.h = 95,
-        this.x = can.width/2 - 82/2,
-        this.y = 140
+
     }
     draw(){
     if(state.currentState == state.mode){
