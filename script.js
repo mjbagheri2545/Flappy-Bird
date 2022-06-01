@@ -1,6 +1,8 @@
 let can = document.querySelector('canvas');
 let c = can.getContext('2d');
 let container = document.querySelector('.container');
+let srcStyle = document.getElementById('style');
+let bgImg = document.getElementById('background');
 
 let sprite = new Image();
 sprite.src = './image/sprite.png';
@@ -86,7 +88,7 @@ function change(data){
 }
 
 
-document.addEventListener('click',(e)=>{
+container.addEventListener('click',(e)=>{
     switch (state.currentState) {
         case state.getready:
             scoreValue = 0;
@@ -205,13 +207,13 @@ class Pipes{
                 let bottomPosY = pos.y + this.h + this.gap;
                 if(bird.x + 12 > pos.x && bird.x - 12 < pos.x + this.w && bird.y - 12 < pos.y + this.h
                     && bird.y + 12 > pos.y ){
-                    state.currentState = state.gameover;
                     HIT.play();
+                    state.currentState = state.gameover;
                 }
                 if(bird.x + 12 > pos.x && bird.x - 12 < pos.x + this.w && bird.y - 12 > bottomPosY
                     && bird.y + 12 < bottomPosY + this.h ){
-                    state.currentState = state.gameover;
                     HIT.play();
+                    state.currentState = state.gameover;
                 }
 
 
@@ -221,6 +223,7 @@ class Pipes{
         
 }
 
+let pipes = new Pipes();
 class Score{
     constructor(){
         this.value = 0;
@@ -245,6 +248,7 @@ class Score{
         }
     }
 }
+
 
 let score = new Score();
 class NewRecord{
@@ -289,8 +293,6 @@ class NewRecord{
 }
 
 let newrecord = new NewRecord();
-
-let pipes = new Pipes();
 
 class Bird{
     constructor(){
@@ -441,5 +443,4 @@ function game(){
     requestAnimationFrame(game);
     
 }
-
 game();
