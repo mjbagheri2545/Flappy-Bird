@@ -3,6 +3,7 @@ let c = can.getContext('2d');
 let container = document.querySelector('.container');
 let srcStyle = document.getElementById('style');
 let bgImg = document.getElementById('background');
+let clickHandler = document.querySelector('.clickHandler');
 
 let sprite = new Image();
 sprite.src = './image/sprite.png';
@@ -81,6 +82,8 @@ function change(data){
         score.bestIndex = data.scoreBestIndex ;
         localStorageKey = data.localStorageName;
         newrecord.ImgIndex = data.recordImgIndex;
+        state.currentState = state.gaming;
+        START.play();
     document.querySelectorAll('.div').forEach((e)=>{
         e.remove();
      })
@@ -88,7 +91,7 @@ function change(data){
 }
 
 
-container.addEventListener('click',(e)=>{
+clickHandler.addEventListener('click',(e)=>{
     switch (state.currentState) {
         case state.getready:
             scoreValue = 0;
@@ -205,13 +208,13 @@ class Pipes{
                     localStorage.setItem(localStorageKey,score.best[score.bestIndex]);
                 }
                 let bottomPosY = pos.y + this.h + this.gap;
-                if(bird.x + 12 > pos.x && bird.x - 12 < pos.x + this.w && bird.y - 12 < pos.y + this.h
-                    && bird.y + 12 > pos.y ){
+                if(bird.x + bird.radius > pos.x && bird.x - bird.radius < pos.x + this.w  && bird.y + bird.radius > pos.y
+                    && bird.y - bird.radius < pos.y + this.h){
                     HIT.play();
                     state.currentState = state.gameover;
                 }
-                if(bird.x + 12 > pos.x && bird.x - 12 < pos.x + this.w && bird.y - 12 > bottomPosY
-                    && bird.y + 12 < bottomPosY + this.h ){
+                if(bird.x + bird.radius > pos.x && bird.x - bird.radius < pos.x + this.w  && bird.y + bird.radius > bottomPosY
+                    && bird.y - bird.radius < bottomPosY + this.h){
                     HIT.play();
                     state.currentState = state.gameover;
                 }
@@ -310,7 +313,8 @@ class Bird{
         this.g = 0.25,
         this.speed = 0,
         this.rotation = 0,
-        this.r
+        this.r,
+        this.radius = 13.6
         }
     draw(){
     let bird = this.animation[this.currentIndex];
@@ -336,10 +340,12 @@ class Bird{
         this.y +=this.speed;
     }
     if(this.y + this.h/2 >= can.height - fg.h){
-        state.currentState = state.gameover;
-        DIE.play();
         this.y = can.height - fg.h - this.h/2;
         this.currentIndex = 1;
+        if(state.currentState == state.gaming){
+        DIE.play();
+        state.currentState = state.gameover;
+        }
     }
     if(state.currentState == state.getready || state.currentState == state.gameover || state.currentState == state.mode){
         this.rotation = this.rotation;
